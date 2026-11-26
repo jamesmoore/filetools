@@ -11,6 +11,12 @@
     <Content Include="0000.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="a796618f8b2dc09003412e16f8d5946a747a5780cb7a6e6217f10b62d7270194.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="barratts-new-houses.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="tumblr_pal4j5uMXB1rnbw6mo1_1280.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

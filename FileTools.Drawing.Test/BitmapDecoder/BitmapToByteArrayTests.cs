@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using FileTools.BitmapDecoder;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FileToolsTest.BitmapDecoder
 {
