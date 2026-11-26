@@ -51,6 +51,9 @@ return await root.Parse(args).InvokeAsync();
 
 static async Task ListDuplicates(FileProcessingMethod method, string[] paths)
 {
+    using var progress = new ConsoleDuplicateFinderObserver();
+    progress.SetProgressPercent(0);
+
     var fileSystem = new FileSystem();
     var files = new DuplicateRecurser();
     var recurser = new DirectoryRecurser(files);
@@ -60,7 +63,7 @@ static async Task ListDuplicates(FileProcessingMethod method, string[] paths)
     using var hashStore = new HashStoreFactory(fileSystem).GetHashStore();
     var finder = new DuplicateFinder(
         method,
-        new SilentDuplicateFinderObserver(),
+        progress,
         new SharpCompressWrapper(fileSystem),
         fileSystem,
         new GhostScriptApi(new GhostScriptLocator(fileSystem)),
@@ -68,6 +71,7 @@ static async Task ListDuplicates(FileProcessingMethod method, string[] paths)
         matchFileName: false);
 
     var duplicates = await finder.Process(files.FileList.Values);
+    progress.Complete();
     var groups = duplicates.ToLookup(item => item.Hash);
     foreach (var group in groups.OrderBy(group => group.Min(item => item.FileItem.Length)))
     {
@@ -83,9 +87,49 @@ static async Task ListDuplicates(FileProcessingMethod method, string[] paths)
     Console.WriteLine($"{duplicates.Count} duplicated files in {groups.Count} groups.");
 }
 
-sealed class SilentDuplicateFinderObserver : IDuplicateFinderObserver
+sealed class ConsoleDuplicateFinderObserver : IDuplicateFinderObserver, IDisposable
 {
+    private readonly bool isErrorRedirected = Console.IsErrorRedirected;
+    private int lastPercent = -1;
+    private bool hasOpenLine;
+
     public void SetProgressText(string file) { }
 
-    public void SetProgressPercent(int i) { }
+    public void SetProgressPercent(int percent)
+    {
+        // The finder reports 100% after hashing, before it groups the results.
+        if (percent >= 100 || percent <= lastPercent)
+            return;
+
+        if (isErrorRedirected && lastPercent >= 0 && percent / 10 <= lastPercent / 10)
+            return;
+
+        var message = $"Duplicate scan: {percent,3}%";
+        if (isErrorRedirected)
+        {
+            Console.Error.WriteLine(message);
+        }
+        else
+        {
+            Console.Error.Write($"\r{message}");
+            hasOpenLine = true;
+        }
+
+        lastPercent = percent;
+    }
+
+    public void Complete()
+    {
+        if (!isErrorRedirected)
+            Console.Error.Write('\r');
+
+        Console.Error.WriteLine("Duplicate scan: 100%");
+        hasOpenLine = false;
+    }
+
+    public void Dispose()
+    {
+        if (hasOpenLine)
+            Console.Error.WriteLine();
+    }
 }
