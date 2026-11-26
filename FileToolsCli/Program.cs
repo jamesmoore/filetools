@@ -5,6 +5,7 @@
 
 using System.CommandLine;
 using System.IO.Abstractions;
+using System.IO.Enumeration;
 using FileTools.Common;
 using FileTools.Compressed;
 using FileTools.Dupecheck;
@@ -38,18 +39,26 @@ pathOption.Validators.Add(result =>
     }
 });
 
+var deleteOption = new Option<string?>("--delete")
+{
+    Description = "Preview and confirm deletion of WholeFile duplicates matching a full-path wildcard (* or ?).",
+    Arity = ArgumentArity.ExactlyOne,
+};
+
 var duplicateCommand = new Command("duplicate", "Find duplicate files.");
 duplicateCommand.Options.Add(typeOption);
 duplicateCommand.Options.Add(pathOption);
+duplicateCommand.Options.Add(deleteOption);
 duplicateCommand.SetAction(parseResult => ListDuplicates(
     Enum.Parse<FileProcessingMethod>(parseResult.GetValue(typeOption)!, ignoreCase: true),
-    parseResult.GetValue(pathOption)!));
+    parseResult.GetValue(pathOption)!,
+    parseResult.GetValue(deleteOption)));
 
 var root = new RootCommand("FileTools command-line utilities.");
 root.Subcommands.Add(duplicateCommand);
 return await root.Parse(args).InvokeAsync();
 
-static async Task ListDuplicates(FileProcessingMethod method, string[] paths)
+static async Task<int> ListDuplicates(FileProcessingMethod method, string[] paths, string? deletePattern)
 {
     using var progress = new ConsoleDuplicateFinderObserver();
     progress.SetProgressPercent(0);
@@ -73,6 +82,9 @@ static async Task ListDuplicates(FileProcessingMethod method, string[] paths)
     var duplicates = await finder.Process(files.FileList.Values);
     progress.Complete();
     var groups = duplicates.ToLookup(item => item.Hash);
+    var candidates = new List<DuplicateFileItem>();
+    var skippedGroups = 0;
+    var pattern = deletePattern is null ? null : NormalizePath(deletePattern);
     foreach (var group in groups.OrderBy(group => group.Min(item => item.FileItem.Length)))
     {
         var sorted = group.OrderBy(item => item.FileItem.Length).ToList();
@@ -80,56 +92,93 @@ static async Task ListDuplicates(FileProcessingMethod method, string[] paths)
         var maxSize = sorted[^1].FileItem.Length;
         var size = minSize == maxSize ? $"{minSize:N0} bytes" : $"{minSize:N0}–{maxSize:N0} bytes";
         Console.WriteLine($"{group.Key} ({size})");
+        var matches = pattern is null ? [] : sorted.Where(item => FileSystemName.MatchesSimpleExpression(
+            pattern, NormalizePath(item.FileItem.FullName), ignoreCase: OperatingSystem.IsWindows())).ToHashSet();
+        if (matches.Count == sorted.Count)
+        {
+            Console.WriteLine("  Skipping deletion for this group because every file matches.");
+            matches.Clear();
+            skippedGroups++;
+        }
+
         foreach (var item in sorted)
-            Console.WriteLine($"  {item.FileItem.FullName}");
+        {
+            var candidate = matches.Contains(item);
+            if (candidate)
+                candidates.Add(item);
+
+            WritePath(item.FileItem.FullName, candidate);
+        }
     }
 
     Console.WriteLine($"{duplicates.Count} duplicated files in {groups.Count} groups.");
+    if (pattern is null)
+        return 0;
+
+    if (skippedGroups > 0)
+        Console.WriteLine($"Skipped {skippedGroups} groups where every file matched.");
+
+    if (candidates.Count == 0)
+    {
+        Console.WriteLine("No files eligible for deletion matched the pattern.");
+        return 0;
+    }
+
+    Console.WriteLine($"\nFiles proposed for deletion ({candidates.Count}):");
+    foreach (var candidate in candidates)
+        WritePath(candidate.FileItem.FullName, highlight: false);
+
+    if (Console.IsInputRedirected)
+    {
+        Console.Error.WriteLine("Deletion requires confirmation in an interactive terminal. No files deleted.");
+        return 1;
+    }
+
+    Console.Error.Write("Delete these files? [y/N] ");
+    var answer = Console.ReadLine()?.Trim();
+    if (!string.Equals(answer, "y", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(answer, "yes", StringComparison.OrdinalIgnoreCase))
+    {
+        Console.WriteLine("Deletion cancelled.");
+        return 0;
+    }
+
+    var deleted = 0;
+    foreach (var candidate in candidates)
+    {
+        try
+        {
+            candidate.FileItem.Delete();
+            deleted++;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Console.Error.WriteLine($"Could not delete {candidate.FileItem.FullName}: {ex.Message}");
+        }
+    }
+
+    Console.WriteLine($"Deleted {deleted} of {candidates.Count} proposed files.");
+    return deleted == candidates.Count ? 0 : 1;
 }
 
-sealed class ConsoleDuplicateFinderObserver : IDuplicateFinderObserver, IDisposable
+static string NormalizePath(string path) => OperatingSystem.IsWindows() ? path.Replace('\\', '/') : path;
+
+static void WritePath(string path, bool highlight)
 {
-    private readonly bool isErrorRedirected = Console.IsErrorRedirected;
-    private int lastPercent = -1;
-    private bool hasOpenLine;
-
-    public void SetProgressText(string file) { }
-
-    public void SetProgressPercent(int percent)
+    if (!highlight || Console.IsOutputRedirected)
     {
-        // The finder reports 100% after hashing, before it groups the results.
-        if (percent >= 100 || percent <= lastPercent)
-            return;
-
-        if (isErrorRedirected && lastPercent >= 0 && percent / 10 <= lastPercent / 10)
-            return;
-
-        var message = $"Duplicate scan: {percent,3}%";
-        if (isErrorRedirected)
-        {
-            Console.Error.WriteLine(message);
-        }
-        else
-        {
-            Console.Error.Write($"\r{message}");
-            hasOpenLine = true;
-        }
-
-        lastPercent = percent;
+        Console.WriteLine($"  {path}");
+        return;
     }
 
-    public void Complete()
+    var previous = Console.ForegroundColor;
+    try
     {
-        if (!isErrorRedirected)
-            Console.Error.Write('\r');
-
-        Console.Error.WriteLine("Duplicate scan: 100%");
-        hasOpenLine = false;
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"  {path}");
     }
-
-    public void Dispose()
+    finally
     {
-        if (hasOpenLine)
-            Console.Error.WriteLine();
+        Console.ForegroundColor = previous;
     }
 }
