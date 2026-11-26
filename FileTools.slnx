@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Readme.md" />
+  </Folder>
+  <Project Path="FileTools.Drawing.Test/FileTools.Drawing.Test.csproj" />
+  <Project Path="FileTools.Drawing/FileTools.Drawing.csproj" />
+  <Project Path="FileTools.Phash/FileTools.Phash.csproj" />
+  <Project Path="FileTools/FileTools.csproj" />
+  <Project Path="FileToolsCli/FileToolsCli.csproj" Id="46152fd9-c3be-4ab1-b180-6d29ae256fc3" />
+  <Project Path="FileToolsTest/FileToolsTest.csproj" />
+  <Project Path="FileToolsUI/FileToolsUI.csproj" />
+</Solution>

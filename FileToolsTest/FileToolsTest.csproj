@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="test-archive.zip" />
+    <None Remove="tumblr_pal4j5uMXB1rnbw6mo1_1280.gif" />
+    <None Remove="tumblr_pew3zxiCR71rnbw6mo1_1280.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="4.5.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="4.5.3" />
+    <PackageReference Include="coverlet.collector" Version="10.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileTools.Drawing\FileTools.Drawing.csproj" />
+    <ProjectReference Include="..\FileTools\FileTools.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="0000.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="a796618f8b2dc09003412e16f8d5946a747a5780cb7a6e6217f10b62d7270194.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="barratts-new-houses.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="test-archive.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tumblr_pal4j5uMXB1rnbw6mo1_1280.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tumblr_pew3zxiCR71rnbw6mo1_1280.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="PDFHasher\lemorted.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="PDFHasher\lemorted_optimized.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

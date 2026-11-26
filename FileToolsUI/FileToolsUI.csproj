@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net11.0-windows7.0</TargetFramework>
+    <ApplicationIcon>Papirus-Team-Papirus-Apps-Caja-actions.ico</ApplicationIcon>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json" />
+    <Content Include="Papirus-Team-Papirus-Apps-Caja-actions.ico" />
+    <Content Include="App.ico" />
+    <Compile Update="Controls\MultipleDirectorySelector.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileTools.Phash\FileTools.Phash.csproj" />
+    <ProjectReference Include="..\FileTools\FileTools.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Abstractions" Version="23.1.0" />
+  </ItemGroup>
+  <PropertyGroup />
+</Project>

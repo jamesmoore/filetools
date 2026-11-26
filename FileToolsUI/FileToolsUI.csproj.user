@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PublishUrlHistory>publish\</PublishUrlHistory>
+    <InstallUrlHistory />
+    <SupportUrlHistory />
+    <UpdateUrlHistory />
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory />
+    <FallbackCulture>en-US</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
+    <ProjectView>ShowAllFiles</ProjectView>
+    <_LastSelectedProfileId>D:\Source\FileTools\FileToolsUI\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Dupecheck\frmDuplicateFileFinder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="EmptyDirectoryFinder\frmEmptyDirectoryLister.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FileType\frmFileTypeMismatchFinder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="frmDirectoryListerBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="frmParent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PHash\frmPHash.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SFV\frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ZIPTester\frmZipFileFinder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Controls\MultipleDirectorySelector.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Dupecheck\frmDuplicateFileFinder.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="EmptyDirectoryFinder\frmEmptyDirectoryLister.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="ZIPTester\frmZipFileFinder.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

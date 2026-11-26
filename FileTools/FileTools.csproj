@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net11.0</TargetFramework>
+		<OutputType>Library</OutputType>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Dapper" Version="2.1.100" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="11.0.0" />
+		<PackageReference Include="NLog" Version="6.2.2" />
+		<PackageReference Include="protobuf-net" Version="3.4.40" />
+		<PackageReference Include="SharpCompress" Version="0.50.12" />
+		<PackageReference Include="System.IO.Abstractions" Version="23.1.0" />
+		<PackageReference Include="TagLibSharp" Version="2.3.0" />
+		<PackageReference Include="SkiaSharp" Version="4.157.0" />
+	</ItemGroup>
+</Project>

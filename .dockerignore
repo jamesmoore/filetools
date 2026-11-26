@@ -1,0 +1,7 @@
+*
+!FileTools/
+!FileTools/**
+!FileToolsCli/
+!FileToolsCli/**
+**/bin/
+**/obj/
