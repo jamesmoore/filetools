@@ -1,0 +1,41 @@
+version: 2
+updates:
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: "/FileTools"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: "/FileTools.Drawing"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: "/FileTools.Drawing.Test"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: "/FileTools.Phash"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: "/FileToolsCli"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: "/FileToolsTest"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: "/FileToolsUI"
+    schedule:
+      interval: weekly
