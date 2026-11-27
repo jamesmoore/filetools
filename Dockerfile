@@ -13,6 +13,9 @@ RUN dotnet publish FileToolsCli/FileToolsCli.csproj -c Release -a "$TARGETARCH" 
 
 FROM mcr.microsoft.com/dotnet/runtime:11.0-resolute
 WORKDIR /app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ghostscript \
+    && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /var/lib/filetools && chown app /var/lib/filetools
 COPY --from=build /app/publish/ ./
 USER app
