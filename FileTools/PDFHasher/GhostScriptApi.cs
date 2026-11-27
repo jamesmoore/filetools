@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 
 namespace FileTools.PDFHasher
 {
@@ -10,11 +11,15 @@ namespace FileTools.PDFHasher
 
         public (int ExitCode, string Output) ExtractPdfToPath(string filename, string destination)
         {
-            var arguments = $"-dBATCH -dNOPAUSE -dSAFER -sDEVICE=png16m -sOutputFile=\"{destination}\\pdffile-%04d.png\" \"{filename}\"";
-
             using var psi = new Process();
             psi.StartInfo.FileName = ExecutableFileName;
-            psi.StartInfo.Arguments = arguments;
+            psi.StartInfo.ArgumentList.Add("-dBATCH");
+            psi.StartInfo.ArgumentList.Add("-dNOPAUSE");
+            psi.StartInfo.ArgumentList.Add("-dSAFER");
+            psi.StartInfo.ArgumentList.Add("-sDEVICE=png16m");
+            psi.StartInfo.ArgumentList.Add($"-sOutputFile={Path.Combine(destination, "pdffile-%04d.png")}");
+            psi.StartInfo.ArgumentList.Add("-f");
+            psi.StartInfo.ArgumentList.Add(Path.GetFullPath(filename));
             psi.StartInfo.CreateNoWindow = true;
             psi.StartInfo.UseShellExecute = false;
             psi.StartInfo.RedirectStandardOutput = true;

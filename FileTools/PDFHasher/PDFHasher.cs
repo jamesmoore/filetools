@@ -43,7 +43,10 @@ namespace FileTools.PDFHasher
                     }
                     else
                     {
-                        var streams = files.Select(fileSystem.File.OpenRead);
+                        // Ghostscript pads page numbers to at least four digits.
+                        var streams = files.OrderBy(path => path.Length)
+                            .ThenBy(path => path, StringComparer.Ordinal)
+                            .Select(fileSystem.File.OpenRead);
                         using var combined = new StreamOfStreams(streams);
                         var hash = await hashCalculator.GetStreamHash(combined);
                         return hash;
